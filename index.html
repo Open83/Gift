@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saraaaa's Gift 💝</title>
+    <title>KuchuPuchu Gift 💝</title>
     <style>
         * {
             margin: 0;
@@ -653,7 +653,7 @@
                     <span>💕</span>
                     <span>💕</span>
                 </div>
-                <h2 class="letter-title">To My Bacchiiiii💕</h2>
+                <h2 class="letter-title">To My KuchuPuchu</h2>
                 <div class="letter-content">
                     Happy Boyfriend's Day to the most amazing person in my life! You make every day brighter with your love, care, and little things that mean so much.
                     <br><br>
@@ -723,7 +723,7 @@ Madam Ji</div>
         <button class="back-btn" onclick="showScreen('menu')">✕</button>
         <div class="game-container">
             <div class="game-card">
-                <h2 class="game-title">Catch Hearts & Hello Saraaaaa❤️!</h2>
+                <h2 class="game-title">Catch Hearts & Hello Kitty!</h2>
                 <div class="game-stats">
                     <span>Score: <span id="score">0</span></span>
                     <span>Time: <span id="time">30</span>s</span>
@@ -763,6 +763,10 @@ Madam Ji</div>
                     <h3>If the world was ending</h3>
                     <p>JP Saxe & Julia Michaels</p>
                     <div class="song-quote">If the world was ending, I'd wanna be next to you</div>
+                    <audio controls style="width: 100%; margin-top: 10px;">
+                        <source src="song1.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
                 </div>
             </div>
 
@@ -771,6 +775,10 @@ Madam Ji</div>
                 <div class="song-info">
                     <h3>Perfect</h3>
                     <p>Ed Sheeran</p>
+                    <audio controls style="width: 100%; margin-top: 10px;">
+                        <source src="song2.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
                 </div>
             </div>
 
@@ -779,6 +787,10 @@ Madam Ji</div>
                 <div class="song-info">
                     <h3>All of Me</h3>
                     <p>John Legend</p>
+                    <audio controls style="width: 100%; margin-top: 10px;">
+                        <source src="song3.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
                 </div>
             </div>
 
@@ -787,6 +799,10 @@ Madam Ji</div>
                 <div class="song-info">
                     <h3>Lover</h3>
                     <p>Taylor Swift</p>
+                    <audio controls style="width: 100%; margin-top: 10px;">
+                        <source src="song4.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
                 </div>
             </div>
         </div>
@@ -820,6 +836,7 @@ Madam Ji</div>
         let heartInterval = null;
         let isGameRunning = false;
         let heartId = 0;
+        let currentDifficulty = 1;
 
         // Start Game
         function startGame() {
@@ -829,6 +846,7 @@ Madam Ji</div>
             gameTime = 30;
             isGameRunning = true;
             heartId = 0;
+            currentDifficulty = 1;
             
             document.getElementById('score').textContent = gameScore;
             document.getElementById('time').textContent = gameTime;
@@ -841,20 +859,35 @@ Madam Ji</div>
                 gameTime--;
                 document.getElementById('time').textContent = gameTime;
                 
+                // Increase difficulty every 10 seconds
+                if (gameTime === 20) currentDifficulty = 1.5;
+                if (gameTime === 10) currentDifficulty = 2;
+                
                 if (gameTime <= 0) {
                     endGame();
                 }
             }, 1000);
 
-            // Spawn hearts faster
-            heartInterval = setInterval(() => {
-                if (isGameRunning) {
-                    spawnHeart();
-                }
-            }, 500);
+            // Spawn hearts - starts easier, gets harder
+            spawnHearts();
         }
 
-        // Spawn Heart - IMPROVED VERSION
+        // Spawn hearts with increasing difficulty
+        function spawnHearts() {
+            if (!isGameRunning) return;
+            
+            spawnHeart();
+            
+            // Decrease spawn interval as difficulty increases
+            const baseInterval = 700;
+            const interval = baseInterval / currentDifficulty;
+            
+            heartInterval = setTimeout(() => {
+                spawnHearts();
+            }, interval);
+        }
+
+        // Spawn Heart - HARDER VERSION
         function spawnHeart() {
             const gameArea = document.getElementById('gameArea');
             const heart = document.createElement('div');
@@ -869,6 +902,11 @@ Madam Ji</div>
             
             heart.style.left = randomX + 'px';
             heart.style.top = '-50px';
+            
+            // Random size for more challenge (smaller hearts are harder)
+            const sizes = [30, 35, 40, 45];
+            const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+            heart.style.fontSize = randomSize + 'px';
             
             // Click handler for catching heart
             heart.addEventListener('click', function(e) {
@@ -886,9 +924,15 @@ Madam Ji</div>
             
             gameArea.appendChild(heart);
             
-            // Animate heart falling
+            // Animate heart falling - speed increases with difficulty
             let position = -50;
-            const fallSpeed = 2;
+            const baseFallSpeed = 2.5;
+            const fallSpeed = baseFallSpeed * currentDifficulty;
+            
+            // Add horizontal movement for more challenge
+            const horizontalSpeed = (Math.random() - 0.5) * 2;
+            let horizontalPos = randomX;
+            
             const fallAnimation = setInterval(() => {
                 if (!isGameRunning || !heart.parentNode) {
                     clearInterval(fallAnimation);
@@ -896,7 +940,14 @@ Madam Ji</div>
                 }
                 
                 position += fallSpeed;
+                horizontalPos += horizontalSpeed;
+                
+                // Keep hearts within bounds
+                if (horizontalPos < 0) horizontalPos = 0;
+                if (horizontalPos > maxX) horizontalPos = maxX;
+                
                 heart.style.top = position + 'px';
+                heart.style.left = horizontalPos + 'px';
                 
                 // Remove if reached bottom
                 if (position > gameArea.offsetHeight) {
@@ -929,7 +980,7 @@ Madam Ji</div>
         function endGame() {
             isGameRunning = false;
             clearInterval(gameInterval);
-            clearInterval(heartInterval);
+            clearTimeout(heartInterval);
             
             document.getElementById('startBtn').disabled = false;
             document.getElementById('startBtn').textContent = 'Start Game! 💕';
