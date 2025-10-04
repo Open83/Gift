@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KuchuPuchu Gift 💝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(to bottom, #fce7f3, #fbcfe8);
+            min-height: 100vh;
+        }
+
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .screen.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Welcome Screen */
+        #welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .welcome-emoji {
+            font-size: 80px;
+            animation: bounce 2s infinite;
+        }
+
+        .welcome-title {
+            font-size: 48px;
+            color: #ec4899;
+            font-weight: bold;
+            margin: 20px 0 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 24px;
+            color: #f472b6;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #db2777;
+            transform: scale(1.05);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        /* Menu Screen */
+        .menu-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .menu-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .menu-title {
+            font-size: 32px;
+            color: #ec4899;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .menu-subtitle {
+            font-size: 20px;
+            color: #f9a8d4;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .menu-card:nth-child(1) { animation-delay: 0.1s; }
+        .menu-card:nth-child(2) { animation-delay: 0.2s; }
+        .menu-card:nth-child(3) { animation-delay: 0.3s; }
+        .menu-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .menu-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-card:active {
+            transform: scale(0.98);
+        }
+
+        .menu-card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .menu-card-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .menu-card-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Back Button */
+        .back-btn {
+            background: transparent;
+            border: none;
+            font-size: 32px;
+            color: #ec4899;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Letter Screen */
+        .letter-container {
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease;
+            padding-bottom: 20px;
+        }
+
+        .letter-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        /* Custom scrollbar for letter */
+        .letter-card::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .letter-card::-webkit-scrollbar-track {
+            background: #fce7f3;
+            border-radius: 10px;
+        }
+
+        .letter-card::-webkit-scrollbar-thumb {
+            background: #ec4899;
+            border-radius: 10px;
+        }
+
+        .letter-card::-webkit-scrollbar-thumb:hover {
+            background: #db2777;
+        }
+
+        .letter-hearts {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .letter-hearts span {
+            font-size: 24px;
+        }
+
+        .letter-title {
+            font-size: 32px;
+            color: #ec4899;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .letter-content {
+            color: #333;
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .letter-signature {
+            text-align: right;
+            color: #ec4899;
+            font-weight: 600;
+            white-space: pre-line;
+        }
+
+        .letter-footer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .letter-footer span {
+            font-size: 20px;
+        }
+
+        /* Moments Screen */
+        .moments-header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .moments-title {
+            font-size: 32px;
+            color: #f97316;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .moments-subtitle {
+            font-size: 18px;
+            color: #fb923c;
+        }
+
+        .moment-card {
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            animation: fadeInUp 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .moment-card:nth-child(1) { animation-delay: 0.1s; }
+        .moment-card:nth-child(3) { animation-delay: 0.2s; }
+        .moment-card:nth-child(5) { animation-delay: 0.3s; }
+        .moment-card:nth-child(7) { animation-delay: 0.4s; }
+
+        .moment-card:hover {
+            transform: scale(1.03);
+        }
+
+        .moment-card:active {
+            transform: scale(0.98);
+        }
+
+        .moment-corner {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: #fbbf24;
+            border-bottom-left-radius: 20px;
+        }
+
+        .moment-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .moment-hint {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .moment-full {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            color: #4b5563;
+            line-height: 1.6;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
+        }
+
+        .moment-full.show {
+            max-height: 500px;
+            opacity: 1;
+            padding: 25px;
+        }
+
+        /* Game Screen */
+        .game-container {
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease;
+            padding-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .game-title {
+            font-size: 28px;
+            color: #ec4899;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #f472b6;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #fce7f3, #fbcfe8);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            touch-action: none;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 40px;
+            cursor: pointer;
+            user-select: none;
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .heart:active {
+            animation: heartPop 0.3s ease;
+        }
+
+        @keyframes heartPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(0); }
+        }
+
+        .btn-game {
+            width: 100%;
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-game:hover {
+            background: #db2777;
+        }
+
+        .btn-game:active {
+            transform: scale(0.98);
+        }
+
+        .btn-game:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        /* Game Complete Screen */
+        .complete-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        .complete-card {
+            background: white;
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .trophy-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .complete-title {
+            font-size: 36px;
+            color: #ec4899;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .complete-text {
+            font-size: 20px;
+            color: #4b5563;
+            margin-bottom: 10px;
+        }
+
+        .complete-score {
+            font-size: 24px;
+            color: #f472b6;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* Playlist Screen */
+        .playlist-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .playlist-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .playlist-title {
+            font-size: 32px;
+            color: #a855f7;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .playlist-subtitle {
+            font-size: 18px;
+            color: #c084fc;
+        }
+
+        .song-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            animation: fadeInUp 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .song-card:nth-child(1) { animation-delay: 0.1s; }
+        .song-card:nth-child(2) { animation-delay: 0.2s; }
+        .song-card:nth-child(3) { animation-delay: 0.3s; }
+        .song-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .song-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #60a5fa, #a855f7);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .song-info {
+            flex: 1;
+        }
+
+        .song-info h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .song-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .song-quote {
+            font-size: 13px;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Colors */
+        .bg-yellow { background: #fef3c7; }
+        .bg-pink { background: #fce7f3; }
+        .bg-blue { background: #dbeafe; }
+        .bg-purple { background: #ede9fe; }
+        .text-yellow { color: #f59e0b; }
+        .text-pink { color: #ec4899; }
+        .text-blue { color: #3b82f6; }
+        .text-purple { color: #a855f7; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .welcome-emoji { font-size: 60px; }
+            .welcome-title { font-size: 36px; }
+            .welcome-subtitle { font-size: 18px; }
+            .menu-title { font-size: 28px; }
+            .game-area { height: 350px; }
+            .heart { font-size: 35px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome" class="screen active">
+        <div class="welcome-emoji">💝</div>
+        <h1 class="welcome-title">Hello Kitty</h1>
+        <p class="welcome-subtitle">A Little for you ♥</p>
+        <button class="btn-primary" onclick="showScreen('menu')">Open Gift 🎁</button>
+    </div>
+
+    <!-- Menu Screen -->
+    <div id="menu" class="screen">
+        <div class="menu-container">
+            <div class="menu-header">
+                <h1 class="menu-title">Huii, KuchuPuchu,</h1>
+                <p class="menu-subtitle">A Gift for You</p>
+            </div>
+
+            <div class="menu-card" onclick="showScreen('letter')">
+                <div class="menu-card-icon">📧</div>
+                <h3 class="menu-card-title text-pink">Read My Letter</h3>
+                <p class="menu-card-desc">Click to see your special letter</p>
+            </div>
+
+            <div class="menu-card" onclick="showScreen('moments')">
+                <div class="menu-card-icon">🖼️</div>
+                <h3 class="menu-card-title text-yellow">Some Special Moments</h3>
+                <p class="menu-card-desc">Swipe to see more ✨</p>
+            </div>
+
+            <div class="menu-card" onclick="showScreen('game')">
+                <div class="menu-card-icon">❤️</div>
+                <h3 class="menu-card-title" style="color: #ef4444;">Catch Hearts Game</h3>
+                <p class="menu-card-desc">Play with me! 💕</p>
+            </div>
+
+            <div class="menu-card" onclick="showScreen('playlist')">
+                <div class="menu-card-icon">🎵</div>
+                <h3 class="menu-card-title text-purple">Playlist For You</h3>
+                <p class="menu-card-desc">Songs dedicated to u</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Letter Screen -->
+    <div id="letter" class="screen">
+        <button class="back-btn" onclick="showScreen('menu')">✕</button>
+        <div class="letter-container">
+            <div class="letter-card">
+                <div class="letter-hearts">
+                    <span>💕</span>
+                    <span>💕</span>
+                </div>
+                <h2 class="letter-title">To My KuchuPuchu</h2>
+                <div class="letter-content">
+                    Happy Boyfriend's Day to the most amazing person in my life! You make every day brighter with your love, care, and little things that mean so much.
+                    <br><br>
+                    I'm so lucky to have you by my side, and I just want you to know how deeply you're loved and appreciated today and always.
+                </div>
+                <div class="letter-signature">With all my love,
+Yours sincerely,
+Madam Ji</div>
+                <div class="letter-footer">
+                    <span>💕</span>
+                    <span>💜</span>
+                    <span>💕</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Moments Screen -->
+    <div id="moments" class="screen">
+        <button class="back-btn" onclick="showScreen('menu')">✕</button>
+        <div class="menu-container">
+            <div class="moments-header">
+                <h2 class="moments-title">Some Special Moments</h2>
+                <p class="moments-subtitle">Swipe to see more ✨</p>
+            </div>
+
+            <div class="moment-card bg-yellow" onclick="toggleMoment(0)">
+                <div class="moment-corner"></div>
+                <p class="moment-text">You make every day brighter</p>
+                <p class="moment-hint">Click me! 👆</p>
+            </div>
+            <div id="moment-0" class="moment-full">
+                Every morning I wake up grateful for you. Your smile is my sunshine, and your laughter is my favorite melody.
+            </div>
+
+            <div class="moment-card bg-pink" onclick="toggleMoment(1)">
+                <div class="moment-corner"></div>
+                <p class="moment-text">You're my favorite person</p>
+                <p class="moment-hint">Click me! 👆</p>
+            </div>
+            <div id="moment-1" class="moment-full">
+                Out of everyone in this world, you're the one I choose every single day. You make my heart feel at home.
+            </div>
+
+            <div class="moment-card bg-blue" onclick="toggleMoment(2)">
+                <div class="moment-corner"></div>
+                <p class="moment-text">You make me smile</p>
+                <p class="moment-hint">Click me! 👆</p>
+            </div>
+            <div id="moment-2" class="moment-full">
+                Even on the hardest days, thinking of you brings a smile to my face. You're my happiness, my comfort, my everything.
+            </div>
+
+            <div class="moment-card bg-purple" onclick="toggleMoment(3)">
+                <div class="moment-corner"></div>
+                <p class="moment-text">I love you so much</p>
+                <p class="moment-hint">Click me! 👆</p>
+            </div>
+            <div id="moment-3" class="moment-full">
+                Words can't express how much you mean to me. You're my best friend, my partner, my forever love.
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game" class="screen">
+        <button class="back-btn" onclick="showScreen('menu')">✕</button>
+        <div class="game-container">
+            <div class="game-card">
+                <h2 class="game-title">Catch Hearts & Hello Kitty!</h2>
+                <div class="game-stats">
+                    <span>Score: <span id="score">0</span></span>
+                    <span>Time: <span id="time">30</span>s</span>
+                </div>
+                <div id="gameArea" class="game-area"></div>
+                <button id="startBtn" class="btn-game" onclick="startGame()">Start Game! 💕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Complete Screen -->
+    <div id="gameComplete" class="screen">
+        <div class="complete-container">
+            <div class="complete-card">
+                <div class="trophy-icon">🏆</div>
+                <h2 class="complete-title">Game Complete!</h2>
+                <p class="complete-text">You did it! 🎉</p>
+                <p class="complete-score">You caught <span id="finalScore">0</span> hearts!</p>
+                <button class="btn-primary" onclick="showScreen('menu')">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playlist Screen -->
+    <div id="playlist" class="screen">
+        <button class="back-btn" onclick="showScreen('menu')">✕</button>
+        <div class="menu-container">
+            <div class="playlist-header">
+                <div class="playlist-icon">🎵</div>
+                <h2 class="playlist-title">Playlist For You</h2>
+                <p class="playlist-subtitle">Songs dedicated to u</p>
+            </div>
+
+            <div class="song-card">
+                <div class="song-icon">🎵</div>
+                <div class="song-info">
+                    <h3>If the world was ending</h3>
+                    <p>JP Saxe & Julia Michaels</p>
+                    <div class="song-quote">If the world was ending, I'd wanna be next to you</div>
+                </div>
+            </div>
+
+            <div class="song-card">
+                <div class="song-icon">🎵</div>
+                <div class="song-info">
+                    <h3>Perfect</h3>
+                    <p>Ed Sheeran</p>
+                </div>
+            </div>
+
+            <div class="song-card">
+                <div class="song-icon">🎵</div>
+                <div class="song-info">
+                    <h3>All of Me</h3>
+                    <p>John Legend</p>
+                </div>
+            </div>
+
+            <div class="song-card">
+                <div class="song-icon">🎵</div>
+                <div class="song-info">
+                    <h3>Lover</h3>
+                    <p>Taylor Swift</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Screen Navigation with smooth transitions
+        function showScreen(screenId) {
+            const currentScreen = document.querySelector('.screen.active');
+            const nextScreen = document.getElementById(screenId);
+            
+            if (currentScreen) {
+                currentScreen.classList.remove('active');
+            }
+            
+            setTimeout(() => {
+                nextScreen.classList.add('active');
+            }, 50);
+        }
+
+        // Toggle Moments with smooth animation
+        function toggleMoment(index) {
+            const momentDiv = document.getElementById(`moment-${index}`);
+            momentDiv.classList.toggle('show');
+        }
+
+        // Game Variables
+        let gameScore = 0;
+        let gameTime = 30;
+        let gameInterval = null;
+        let heartInterval = null;
+        let isGameRunning = false;
+        let heartId = 0;
+
+        // Start Game
+        function startGame() {
+            if (isGameRunning) return;
+            
+            gameScore = 0;
+            gameTime = 30;
+            isGameRunning = true;
+            heartId = 0;
+            
+            document.getElementById('score').textContent = gameScore;
+            document.getElementById('time').textContent = gameTime;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('startBtn').textContent = 'Playing...';
+            document.getElementById('gameArea').innerHTML = '';
+
+            // Timer
+            gameInterval = setInterval(() => {
+                gameTime--;
+                document.getElementById('time').textContent = gameTime;
+                
+                if (gameTime <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            // Spawn hearts faster
+            heartInterval = setInterval(() => {
+                if (isGameRunning) {
+                    spawnHeart();
+                }
+            }, 500);
+        }
+
+        // Spawn Heart - IMPROVED VERSION
+        function spawnHeart() {
+            const gameArea = document.getElementById('gameArea');
+            const heart = document.createElement('div');
+            const currentId = heartId++;
+            
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.setAttribute('data-id', currentId);
+            
+            const maxX = gameArea.offsetWidth - 50;
+            const randomX = Math.random() * maxX;
+            
+            heart.style.left = randomX + 'px';
+            heart.style.top = '-50px';
+            
+            // Click handler for catching heart
+            heart.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                catchHeart(this);
+            });
+
+            // Touch handler for mobile
+            heart.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                catchHeart(this);
+            });
+            
+            gameArea.appendChild(heart);
+            
+            // Animate heart falling
+            let position = -50;
+            const fallSpeed = 2;
+            const fallAnimation = setInterval(() => {
+                if (!isGameRunning || !heart.parentNode) {
+                    clearInterval(fallAnimation);
+                    return;
+                }
+                
+                position += fallSpeed;
+                heart.style.top = position + 'px';
+                
+                // Remove if reached bottom
+                if (position > gameArea.offsetHeight) {
+                    clearInterval(fallAnimation);
+                    if (heart.parentNode) {
+                        heart.remove();
+                    }
+                }
+            }, 20);
+        }
+
+        // Catch Heart - IMPROVED VERSION
+        function catchHeart(heartElement) {
+            if (!isGameRunning) return;
+            
+            gameScore++;
+            document.getElementById('score').textContent = gameScore;
+            
+            // Pop animation
+            heartElement.style.animation = 'heartPop 0.3s ease';
+            
+            setTimeout(() => {
+                if (heartElement.parentNode) {
+                    heartElement.remove();
+                }
+            }, 300);
+        }
+
+        // End Game
+        function endGame() {
+            isGameRunning = false;
+            clearInterval(gameInterval);
+            clearInterval(heartInterval);
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = 'Start Game! 💕';
+            document.getElementById('gameArea').innerHTML = '';
+            document.getElementById('finalScore').textContent = gameScore;
+            
+            setTimeout(() => {
+                showScreen('gameComplete');
+            }, 500);
+        }
+
+        // Prevent default touch behavior on game area
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameArea = document.getElementById('gameArea');
+            if (gameArea) {
+                gameArea.addEventListener('touchstart', function(e) {
+                    if (e.target.classList.contains('heart')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
+        });
+    </script>
+</body>
+</html>
